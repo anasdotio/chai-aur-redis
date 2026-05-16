@@ -10,27 +10,33 @@ This workspace contains small Redis-focused projects that demonstrate key Redis 
 
 - `01-foundation-of-redis`
   - Concept notes for Redis fundamentals.
-  - Contains a small documentation file explaining the basics of Redis.
+  - Contains documentation explaining Redis basics and common data structures.
 
 - `02-setup-local-redis`
   - A local Redis + MongoDB caching example.
-  - Demonstrates how to cache product data in Redis and fall back to MongoDB when needed.
+  - Demonstrates how to cache product data in Redis and fall back to MongoDB on cache miss.
   - Main app file: `src/index.js`
   - Model file: `src/models/productSchema.js`
 
 - `03-site-banner`
   - A simple site banner storage API using Redis.
   - Stores banner text at Redis key `app:banner`.
-  - Supports create, read, delete, and existence check operations.
+  - Supports banner create, read, delete, and existence-check operations.
 
 - `04-login-opt-with-ttl`
   - A one-time password (OTP) example using Redis TTL.
   - Stores OTP values for phone numbers with a 30-second expiration.
-  - Includes OTP generation, verification, and TTL inspection.
+  - Includes OTP generation, verification, single-use invalidation, and TTL inspection.
 
 - `05-user-profile-cache-json-vs-hash`
-  - Placeholder folder for comparing JSON cache storage versus Redis Hash structures.
-  - Currently empty and ready for future examples.
+  - A Redis caching comparison example for user profiles.
+  - Demonstrates storing profile data as JSON strings vs Redis Hashes.
+  - Includes endpoints for writing and reading both JSON and Hash-based profiles.
+
+- `06-email-queue-with-redis-lists`
+  - A Redis-backed email job queue example using list operations.
+  - Adds email jobs with `LPUSH` and processes jobs with `RPOP`.
+  - Demonstrates a simple queue worker pattern and job payload serialization.
 
 ## Services
 
@@ -91,14 +97,43 @@ API endpoints:
 - `POST /otp/verify` with `{ "phone": "1234567890", "otp": "..." }`
 - `GET /otp/:phone/ttl`
 
+### `05-user-profile-cache-json-vs-hash`
+
+```bash
+cd 05-user-profile-cache-json-vs-hash
+npm install
+node src/index.js
+```
+
+API endpoints:
+
+- `POST /user/:id/json` to cache profile data as JSON
+- `GET /user/:id/json` to read JSON-stored profile data
+- `POST /user/:id/hash` to cache profile data as a Redis Hash
+- `GET /user/:id/hash` to read Hash-stored profile data
+
+### `06-email-queue-with-redis-lists`
+
+```bash
+cd 06-email-queue-with-redis-lists
+npm install
+node src/index.js
+```
+
+API endpoints:
+
+- `POST /emails` with `{ "to": "...", "subject": "...", "body": "..." }` to enqueue an email job
+- `GET /emails/process-one` to dequeue and process a single email job
+
 ## Notes
 
-- The sample servers in `03-site-banner` and `04-login-opt-with-ttl` both use port `3000`.
+- The sample servers in `02-setup-local-redis`, `03-site-banner`, `04-login-opt-with-ttl`, `05-user-profile-cache-json-vs-hash`, and `06-email-queue-with-redis-lists` all use port `3000` by default.
 - Run only one app on port `3000` at a time, or update the port in `src/index.js`.
-- `02-setup-local-redis` also depends on MongoDB, so start the `mongo` service first.
+- `02-setup-local-redis` also depends on MongoDB, so start the `mongo` service before running it.
+- The `06-email-queue-with-redis-lists` example demonstrates a simple queue flow; it does not include retry or persistent failure handling.
 
 ## Suggested Improvements
 
 - Add sample data seeding for `02-setup-local-redis`.
-- Fill `05-user-profile-cache-json-vs-hash` with a comparison example.
-- Add README files for `03-site-banner` and `04-login-opt-with-ttl`.
+- Add README files for `03-site-banner`, `04-login-opt-with-ttl`, `05-user-profile-cache-json-vs-hash`, and `06-email-queue-with-redis-lists`.
+- Add production-ready queue handling and retry logic for `06-email-queue-with-redis-lists`.
