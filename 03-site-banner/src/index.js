@@ -18,7 +18,9 @@ app.post("/banner", async (req, res) => {
 
   await redis.set(BANNER_KEY, message);
 
-  res.status(200).json({ message: "Banner updated successfully" });
+  res
+    .status(200)
+    .json({ success: true, message: "Banner updated successfully" });
 });
 
 app.get("/banner", async (req, res) => {
